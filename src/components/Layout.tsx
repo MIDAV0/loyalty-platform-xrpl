@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { useRouter } from 'next/router';
 import { Wallet } from './Wallet';
 
+
 interface Props {
   children: React.ReactNode;
 }
@@ -26,7 +27,8 @@ export const Layout = ({ children }: Props) => {
         <Box width="small">
           LOGO
         </Box>
-        <Wallet />
+
+        { pathname !== '/' && <Wallet /> }
       </Header>
 
       <Main background={pathname === '/' ? 'url(main-bg.png)' : ''} fill>

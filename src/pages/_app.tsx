@@ -3,6 +3,8 @@ import { type AppType } from 'next/app';
 import { Grommet } from 'grommet';
 import './global.css';
 import { WalletContextProvider } from '../context/walletContext';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 
 const xrpl = {
@@ -51,6 +53,7 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
     <Grommet theme={xrpl}>
         <WalletContextProvider>
           <Component {...pageProps} />
+          <ToastContainer />
         </WalletContextProvider>
     </Grommet>
   );

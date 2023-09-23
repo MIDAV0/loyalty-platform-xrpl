@@ -13,25 +13,24 @@ export default function IndexPage() {
       >
         <Box>
           <Heading size="large" color="black" textAlign="center">
-            The On-Chain Decentralized Machine Learning Platform
+            Platform title
           </Heading>
           <Text size="xxlarge" textAlign="center" color="black">
-            <b>F</b>ederated <b>L</b>earning on Bl<b>ock</b>chain{' '}
+            Continue to the platform as
           </Text>
         </Box>
         <Box direction="row-responsive" gap="xlarge">
           <SecondaryButton
+            href="/business"
             margin={{ top: 'large' }}
-            label="Download App"
+            label="Business"
             size="xlarge"
             pad={{ vertical: 'medium', horizontal: 'xlarge' }}
-            href="https://github.com/FLock-io/client-interface/releases"
-            target="_blank"
           />
           <PrimaryButton
-            href="/train"
+            href="/customer"
             margin={{ top: 'large' }}
-            label="Start Training"
+            label="Customer"
             size="xlarge"
             pad={{ vertical: 'medium', horizontal: 'xlarge' }}
           />

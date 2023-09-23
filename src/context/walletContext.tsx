@@ -1,11 +1,12 @@
 import { ReactNode, createContext, useMemo } from 'react';
+import { Client } from 'xrpl';
 
 interface WalletContextProviderProps {
   children: ReactNode;
 }
 
 interface IWalletContext {
-  data: any;
+  client: Client;
 }
 
 export const WalletContext = createContext<IWalletContext>(
@@ -15,24 +16,18 @@ export const WalletContext = createContext<IWalletContext>(
 export function WalletContextProvider({
   children,
 }: WalletContextProviderProps) {
-  // const { data: nativeTokenBalance } = useBalance({
-  //   address: address as `0x${string}`,
-  //   watch: true,
-  // });
 
-  // const { data: flockTokenBalance } = useBalance({
-  //   address: address as `0x${string}`,
-  //   token: process.env.NEXT_PUBLIC_FLOCK_TOKEN_ADDRESS as `0x${string}`,
-  //   watch: true,
-  // });
+  const client = new Client("wss://s.altnet.rippletest.net:51233/");
+
 
   let data = 10
 
   const value = useMemo(
     () => ({
-      data,
+      
+      client,
     }),
-    [data]
+    [client]
   );
 
   return (
