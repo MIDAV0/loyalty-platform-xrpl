@@ -16,7 +16,7 @@ import {
     Header,
 } from 'grommet';
 import { Layout, PrimaryButton, Tasks } from '../components';
-import { Chat, CreditCard, Scorecard, Search, Image } from 'grommet-icons';
+import { Chat, CreditCard, Scorecard, Search, Image, Print } from 'grommet-icons';
 import { useEffect, useState } from 'react';
 import { isInstalled, getAddress } from '@gemwallet/api'
 import { toast } from 'react-toastify';
@@ -319,8 +319,11 @@ export default function BusinessPage() {
                                     {
                                         showTab === 'settings' && (
                                             <Box width="85%" direction="row">
-                                                <Text>Settings</Text>
-                                                <Text>Hook settings: redeploy hook</Text>
+                                                <Header>Settings</Header>
+                                                <Text>Set hook to your account to continue</Text>
+                                                <TextInput placeholder="Token symbol"/>
+                                                <TextInput placeholder="Reward ratio" type='number'/>
+                                                <PrimaryButton label="Set Hook" onClick={() => setHook(true)}/>
                                             </Box>
                                         )
                                     }
