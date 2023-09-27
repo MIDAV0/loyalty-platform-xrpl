@@ -8,10 +8,7 @@ interface AccountData {
 
 const hookNameHex = "7AEB2095209A73B301DED61BE93A974FCA6327CAF7D6B8C0F7F67856F6891D2C";
 
-export default async function getWalletDetails(address: string) : Promise<AccountData> {
-    const client = new Client("wss://s.altnet.rippletest.net:51233");
-    await client.connect();
-
+export default async function getWalletDetails(client: Client, address: string) : Promise<AccountData> {
     try {
 
         const accountData = await client.request({

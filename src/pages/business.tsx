@@ -20,8 +20,9 @@ import { Chat, CreditCard, Scorecard, Search, Image, Print } from 'grommet-icons
 import { useEffect, useState } from 'react';
 import { isInstalled, getAddress } from '@gemwallet/api'
 import { toast } from 'react-toastify';
-import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse } from 'xrpl';
+import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client } from 'xrpl';
 import getWalletDetails from '../helpers/getWalletDetails';
+import setTokenIssuer from '../helpers/setTokenIssuer';
 
 const data = [
     {rewardName: 'Reward 1', points: 10},
@@ -50,6 +51,8 @@ export default function BusinessPage() {
     const [isLoadingUserData, setIsLoadingUserData] = useState(false); 
     const [hook, setHook] = useState(false);
 
+    const client = new Client("wss://s.altnet.rippletest.net:51233");
+
     const connectWallet = async () => {
         const installed = await isInstalled();
         if (installed.result.isInstalled) {
@@ -65,7 +68,7 @@ export default function BusinessPage() {
     
     const loadUserData = async () => {
         setIsLoadingUserData(true);
-        const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(address);
+        const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(client, address);
         console.log(transactions);
         setHook(isHookSet ? true : false);
         if (!isHookSet) {
@@ -93,7 +96,12 @@ export default function BusinessPage() {
         }
     };
 
+    const loadClient = async () => {
+        await client.connect();
+    };
+
     useEffect(() => {
+        loadClient();
         if (address)
             loadUserData();
             loadStoreData();
@@ -318,12 +326,16 @@ export default function BusinessPage() {
                                     }
                                     {
                                         showTab === 'settings' && (
-                                            <Box width="85%" direction="row">
+                                            <Box
+                                                width="85%"
+                                                direction="row" 
+                                                align="center"
+                                            >
                                                 <Header>Settings</Header>
                                                 <Text>Set hook to your account to continue</Text>
                                                 <TextInput placeholder="Token symbol"/>
                                                 <TextInput placeholder="Reward ratio" type='number'/>
-                                                <PrimaryButton label="Set Hook" onClick={() => setHook(true)}/>
+                                                <PrimaryButton label="Set token issuer" onClick={() => setTokenIssuer(client, address, "FOO", "MIDAV.com")}/>
                                             </Box>
                                         )
                                     }
