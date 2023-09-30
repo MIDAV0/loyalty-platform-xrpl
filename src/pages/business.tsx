@@ -23,12 +23,13 @@ import { toast } from 'react-toastify';
 import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client } from 'xrpl';
 import getWalletDetails from '../helpers/getWalletDetails';
 import setTokenIssuer from '../helpers/setTokenIssuer';
+import { Reward } from '../components/Reward';
 
 const data = [
     {rewardName: 'Reward 1', points: 10},
-    {rewardName: 'Reward 2', points: 20, date: '2020-08-21'},
-    {rewardName: 'Reward 3', points: 30, date: '2020-08-22'},
-    {rewardName: 'Reward 4', points: 40, date: '2020-08-23'},
+    {rewardName: 'Reward 2', points: 20},
+    {rewardName: 'Reward 3', points: 30},
+    {rewardName: 'Reward 4', points: 40},
 ]
 
 const dates = [{ date: '2020-08-20', amount: 2 }, { date: '2020-08-21', amount: 47 }, { date: '2020-08-22', amount: 33 }];
@@ -70,7 +71,8 @@ export default function BusinessPage() {
         setIsLoadingUserData(true);
         const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(client, address);
         console.log(transactions);
-        setHook(isHookSet ? true : false);
+        //setHook(isHookSet ? true : false);
+        setHook(true);
         if (!isHookSet) {
             setShowTab('settings');
         }
@@ -295,28 +297,15 @@ export default function BusinessPage() {
                                                     wrap
                                                     align="center"
                                                     justify="center"
-                                                    gap="small"
                                                 >
                                                     {
-                                                        rewards.map((reward, index) => {
+                                                        data.map((reward, index) => {
                                                             return (
-                                                                <Box
-                                                                    background="#FFFFFF"
+                                                                <Reward
                                                                     key={index}
-                                                                    align="start"
-                                                                    justify="center"
-                                                                    round="small"
-                                                                    elevation="large"
-                                                                    pad="medium"
-                                                                    margin={{ top: 'small' }}
-                                                                    height={{ min: 'small' }}
-                                                                    width="350px"
-                                                                    border={{ color: 'black', size: 'small' }}
-                                                                >
-                                                                    <Box>
-                                                                        Data
-                                                                    </Box>
-                                                                </Box>
+                                                                    name={reward.rewardName}
+                                                                    points={reward.points}
+                                                                />
                                                             );
                                                         })
                                                     }
