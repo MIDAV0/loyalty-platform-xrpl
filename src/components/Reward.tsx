@@ -9,8 +9,7 @@ interface RewardProps {
 export const Reward = (props: RewardProps) => {
     
     return (
-        <Box flex={false} margin="small">
-        <Card height="medium" width="medium" background="light-1">
+        <Card margin="small" flex={false} height="medium" width="medium" background="light-1">
             <CardHeader pad="medium">{props.name}</CardHeader>
             <CardBody pad="medium">
                 <Image
@@ -30,7 +29,6 @@ export const Reward = (props: RewardProps) => {
                 </Text>
             </CardFooter>
         </Card>
-        </Box>
     )
 };
 

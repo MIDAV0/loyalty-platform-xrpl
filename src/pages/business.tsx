@@ -14,6 +14,8 @@ import {
     DataChart,
     Main,
     Header,
+    Form,
+    FormField,
 } from 'grommet';
 import { Layout, PrimaryButton, Tasks } from '../components';
 import { Chat, CreditCard, Scorecard, Search, Image, Print } from 'grommet-icons';
@@ -284,7 +286,7 @@ export default function BusinessPage() {
                                                     direction="row-responsive"
                                                     justify="between"    
                                                 >
-                                                    <Text>Rewards 10</Text>
+                                                    <Text>Rewards {rewards.length}</Text>
                                                     <Text>Search</Text>
                                                     <Button
                                                         label="Add Reward"
@@ -299,7 +301,7 @@ export default function BusinessPage() {
                                                     justify="center"
                                                 >
                                                     {
-                                                        data.map((reward, index) => {
+                                                        rewards.map((reward, index) => {
                                                             return (
                                                                 <Reward
                                                                     key={index}
@@ -332,15 +334,19 @@ export default function BusinessPage() {
                                         showCreateReward && (
                                             <Layer responsive={true}>
                                                 <Box width="xlarge">
-                                                    <Text>Name</Text>
-                                                    <Text>Description</Text>
-                                                    <Text>Image</Text>
-                                                    <Text>Price</Text>
-                                                    <Button 
-                                                        label="Close"
-                                                        primary
-                                                        onClick={() => setShowCreateReward(false)}
-                                                    />
+                                                    <Form>
+                                                        <FormField name="name" label="Reward name" required>
+                                                            <TextInput name="name" />
+                                                        </FormField>
+                                                        <FormField name="price" label="Price" required>
+                                                            <TextInput type="number" name="price" />
+                                                        </FormField>
+                                                        <Button 
+                                                            label="Add Reward"
+                                                            primary
+                                                            onClick={() => setShowCreateReward(false)}
+                                                        />
+                                                    </Form>
                                                 </Box>
                                             </Layer>
                                         )
