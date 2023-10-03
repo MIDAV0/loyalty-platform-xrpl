@@ -31,21 +31,3 @@ export const Reward = (props: RewardProps) => {
         </Card>
     )
 };
-
-{/* <Box
-background="#FFFFFF"
-key={props.index}
-align="start"
-justify="center"
-round="small"
-elevation="large"
-pad="medium"
-margin={{ top: 'small' }}
-height={{ min: 'small' }}
-width="350px"
-border={{ color: 'black', size: 'small' }}
->
-<Box>
-    Data
-</Box>
-</Box> */}

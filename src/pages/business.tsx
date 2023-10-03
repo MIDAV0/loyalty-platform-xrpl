@@ -53,8 +53,10 @@ export default function BusinessPage() {
     const [isConnected, setIsConnected] = useState(false);
     const [isLoadingUserData, setIsLoadingUserData] = useState(false); 
     const [hook, setHook] = useState(false);
-
-    const client = new Client("wss://s.altnet.rippletest.net:51233");
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [price, setPrice] = useState(0);
+    const [transactions, setTransactions] = useState<any>([]);
 
     const connectWallet = async () => {
         const installed = await isInstalled();
@@ -71,8 +73,24 @@ export default function BusinessPage() {
     
     const loadUserData = async () => {
         setIsLoadingUserData(true);
-        const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(client, address);
+        const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(address);
         console.log(transactions);
+        
+
+        const filteredTxns = transactions ? transactions?.filter((transaction) => transaction.tx?.TransactionType === 'Payment') : [];
+
+        const filteredTxnsData = filteredTxns?.map((txn) => {
+            return {
+                from: txn.tx?.Account === address ? 'You' : txn.tx?.Account,
+                to: txn.tx?.Destination ? (txn.tx?.Destination === address ? 'You' : txn.tx?.Destination) : '',
+                currency: txn.tx?.Amount.currency ? txn.tx?.Amount.currency : 'XRP',
+                amount: dropsToXrp(txn.tx?.Amount.value ? txn.tx?.Amount.value : txn.tx?.Amount), 
+            }
+        });
+
+        setTransactions(filteredTxnsData);
+
+
         //setHook(isHookSet ? true : false);
         setHook(true);
         if (!isHookSet) {
@@ -100,16 +118,33 @@ export default function BusinessPage() {
         }
     };
 
-    const loadClient = async () => {
-        await client.connect();
-    };
-
     useEffect(() => {
-        loadClient();
         if (address)
             loadUserData();
             loadStoreData();
       }, [address])
+
+    const handleAddReward = async () => {
+        const newReward = await fetch(`http://localhost:3000/api/addReward`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    wallet: address,
+                    name: name,
+                    description,
+                    price
+                })
+            }
+        );
+
+        const data = await newReward.json();
+        console.log(data);
+
+        setShowCreateReward(false);
+    }
     
     return (
         <Box>
@@ -227,50 +262,32 @@ export default function BusinessPage() {
                                                         <DataTable
                                                             columns={[
                                                             {
-                                                                property: 'name',
-                                                                header: <Text>Name</Text>,
+                                                                property: 'from',
+                                                                header: <Text>From</Text>,
                                                                 primary: true,
                                                             },
                                                             {
-                                                                property: 'percent',
-                                                                header: 'Complete',
-                                                                render: datum => (
-                                                                <Box pad={{ vertical: 'xsmall' }}>
-                                                                    <Meter
-                                                                    values={[{ value: datum.percent }]}
-                                                                    thickness="small"
-                                                                    size="small"
-                                                                    />
-                                                                </Box>
-                                                                ),
+                                                                property: 'to',
+                                                                header: <Text>To</Text>,
+                                                            },
+                                                            {
+                                                                property: 'currency',
+                                                                header: <Text>Currency</Text>,
+                                                            },
+                                                            {
+                                                                property: 'amount',
+                                                                header: <Text>Amount</Text>,
                                                             },
                                                             ]}
-                                                            data={[
-                                                                { name: 'Alan', percent: 20 },
-                                                                { name: 'Bryan', percent: 30 },
-                                                                { name: 'Chris', percent: 40 },
-                                                                { name: 'Eric', percent: 80 },
-                                                            ]}
+                                                            data={transactions}
                                                         />
                                                     </Box>
                                                 </Box>
                                                 <Box width="30%">
                                                     <Box border height="large" round="small" pad="medium" margin="small">
-                                                        <Box direction="row" background="grey">
-                                                            <Button>
-                                                                Day
-                                                            </Button>
-                                                            <Button>
-                                                                Week
-                                                            </Button>
-                                                            <Button>
-                                                                Month
-                                                            </Button>
-                                                        </Box>
-                                                        <Box fill="vertical">
-                                                            <Text>
-                                                                Data
-                                                            </Text>
+                                                        <Box fill="vertical" align="center">
+                                                            <Heading level="3">Total transactions</Heading>
+                                                            <Text size="large">{transactions?.length}</Text>
                                                         </Box>
                                                     </Box>
                                                 </Box>            
@@ -332,20 +349,31 @@ export default function BusinessPage() {
                                     }
                                     {
                                         showCreateReward && (
-                                            <Layer responsive={true}>
-                                                <Box width="xlarge">
+                                            <Layer responsive={true} onClickOutside={() => setShowCreateReward(false)}>
+                                                <Box width="xlarge" pad="large" border>
                                                     <Form>
                                                         <FormField name="name" label="Reward name" required>
-                                                            <TextInput name="name" />
+                                                            <TextInput name="name" onChange={(event) => setName(event.target.value)}/>
+                                                        </FormField>
+                                                        <FormField name="description" label="Description" required>
+                                                            <TextInput name="description" onChange={(event) => setDescription(event.target.value)}/>
                                                         </FormField>
                                                         <FormField name="price" label="Price" required>
-                                                            <TextInput type="number" name="price" />
+                                                            <TextInput type="number" name="price" onChange={(event) => setPrice(Number(event.target.value))}/>
                                                         </FormField>
-                                                        <Button 
-                                                            label="Add Reward"
-                                                            primary
-                                                            onClick={() => setShowCreateReward(false)}
-                                                        />
+                                                        <Box direction="row" justify="between">
+                                                            <Button 
+                                                                label="Add Reward"
+                                                                primary
+                                                                onClick={() => handleAddReward()}
+                                                            />
+                                                            <Button 
+                                                                label="Close"
+                                                                primary
+                                                                onClick={() => setShowCreateReward(false)}
+                                                            />
+                                                        </Box>
+
                                                     </Form>
                                                 </Box>
                                             </Layer>
