@@ -22,17 +22,10 @@ import { Chat, CreditCard, Scorecard, Search, Image, Print } from 'grommet-icons
 import { useEffect, useState } from 'react';
 import { isInstalled, getAddress } from '@gemwallet/api'
 import { toast } from 'react-toastify';
-import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client } from 'xrpl';
+import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client, AccountLinesResponse, AccountLinesTrustline } from 'xrpl';
 import getWalletDetails from '../helpers/getWalletDetails';
 import setTokenIssuer from '../helpers/setTokenIssuer';
 import { Reward } from '../components/Reward';
-
-const data = [
-    {rewardName: 'Reward 1', points: 10},
-    {rewardName: 'Reward 2', points: 20},
-    {rewardName: 'Reward 3', points: 30},
-    {rewardName: 'Reward 4', points: 40},
-]
 
 const dates = [{ date: '2020-08-20', amount: 2 }, { date: '2020-08-21', amount: 47 }, { date: '2020-08-22', amount: 33 }];
 
@@ -40,11 +33,12 @@ interface AccountData {
     balance: string;
     transactions?: AccountTxTransaction[];
     isHookSet?: boolean;
+    tokenBalances?: AccountLinesTrustline[];
 };
 
 export default function BusinessPage() {
     const [showTab, setShowTab] = useState<'dashboard' | 'rewards' | 'settings'>('dashboard');
-    const [rewards, setRewards] = useState<any[]>(data);
+    const [rewards, setRewards] = useState<any[]>([]);
     const [showCreateReward, setShowCreateReward] = useState(false);
     const [showWalletSettings, setShowWalletSettings] = useState(false);
     const [installGemWallet, setInstallGemWallet] = useState(false);
@@ -118,10 +112,30 @@ export default function BusinessPage() {
         }
     };
 
+    const loadRewards = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/loadRewards?wallet=${address}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            const data = await response.json();
+            console.log(data);
+            setRewards(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
-        if (address)
+        if (address) {
             loadUserData();
             loadStoreData();
+            loadRewards();
+        }
       }, [address])
 
     const handleAddReward = async () => {
@@ -322,8 +336,10 @@ export default function BusinessPage() {
                                                             return (
                                                                 <Reward
                                                                     key={index}
-                                                                    name={reward.rewardName}
-                                                                    points={reward.points}
+                                                                    name={reward.name}
+                                                                    points={reward.price}
+                                                                    description={reward.description}
+                                                                    isCustomer={false}
                                                                 />
                                                             );
                                                         })
