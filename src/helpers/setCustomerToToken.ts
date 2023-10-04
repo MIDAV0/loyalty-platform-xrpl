@@ -2,8 +2,11 @@ import * as xrpl from 'xrpl';
 import { signTransaction, SignTransactionRequest, SignTransactionResponse } from '@gemwallet/api';
 import { stringToHex } from './stringToHex';
 
-export default async function setCustomerToToken(client: xrpl.Client, address: string, token: string, domain: string) {
+export default async function setCustomerToToken(address: string, token: string, domain: string) {
     try {
+        const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233");
+        await client.connect();
+    
         const transaction = {
             "TransactionType": "AccountSet",
             "Account": address,

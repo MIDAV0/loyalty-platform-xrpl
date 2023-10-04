@@ -26,6 +26,7 @@ import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client, AccountL
 import getWalletDetails from '../helpers/getWalletDetails';
 import setTokenIssuer from '../helpers/setTokenIssuer';
 import { Reward } from '../components/Reward';
+import Head from 'next/head';
 
 const dates = [{ date: '2020-08-20', amount: 2 }, { date: '2020-08-21', amount: 47 }, { date: '2020-08-22', amount: 33 }];
 
@@ -51,6 +52,8 @@ export default function BusinessPage() {
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState(0);
     const [transactions, setTransactions] = useState<any>([]);
+    const [storeName, setStoreName] = useState('');
+    const [domain, setDomain] = useState('');
 
     const connectWallet = async () => {
         const installed = await isInstalled();
@@ -67,9 +70,9 @@ export default function BusinessPage() {
     
     const loadUserData = async () => {
         setIsLoadingUserData(true);
-        const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(address);
-        console.log(transactions);
-        
+        const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(address);        
+
+        // console.log('transactions', transactions);
 
         const filteredTxns = transactions ? transactions?.filter((transaction) => transaction.tx?.TransactionType === 'Payment') : [];
 
@@ -85,8 +88,7 @@ export default function BusinessPage() {
         setTransactions(filteredTxnsData);
 
 
-        //setHook(isHookSet ? true : false);
-        setHook(true);
+        setHook(isHookSet ? true : false);
         if (!isHookSet) {
             setShowTab('settings');
         }
@@ -106,11 +108,33 @@ export default function BusinessPage() {
                     },
                 }
             );
-            const data = await response.json();
+            if (response.status === 200) {
+                const data = await response.json();
+                setStoreName(data.name);
+            }
         } catch (error) {
             console.log(error);
         }
     };
+
+    const createStore = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/createStore`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        wallet: address,
+                        name: storeName,
+                    })
+                }
+            );
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const loadRewards = async () => {
         try {
@@ -352,14 +376,38 @@ export default function BusinessPage() {
                                         showTab === 'settings' && (
                                             <Box
                                                 width="85%"
-                                                direction="row" 
                                                 align="center"
                                             >
-                                                <Header>Settings</Header>
-                                                <Text>Set hook to your account to continue</Text>
-                                                <TextInput placeholder="Token symbol"/>
-                                                <TextInput placeholder="Reward ratio" type='number'/>
-                                                <PrimaryButton label="Set token issuer" onClick={() => setTokenIssuer(client, address, "FOO", "MIDAV.com")}/>
+                                                <Heading level="3">Settings</Heading>
+                                                <Box direction="row-responsive" gap="large" pad="medium">
+                                                    <Box align="center">
+                                                        <Heading level="4">Set Store Data</Heading>
+                                                        <FormField name="storeName" label="Store Name" required>
+                                                            <TextInput name="storeName" onChange={(event) => setStoreName(event.target.value)}/>
+                                                        </FormField>
+                                                        <PrimaryButton
+                                                            label="Set Data"
+                                                            disabled={!storeName}
+                                                            onClick={() => createStore()}
+                                                        />
+                                                    </Box>
+                                                    <Box align="center">
+                                                        <Heading level="4">Set Token</Heading>
+                                                        <FormField name="domain" label="Store domain" required>
+                                                            <TextInput name="domain" onChange={(event) => setDomain(event.target.value)}/>
+                                                        </FormField>
+                                                        <PrimaryButton
+                                                            label="Set token issuer"
+                                                            disabled={!domain}
+                                                            onClick={() => setTokenIssuer(address, domain)}
+                                                        />
+                                                    </Box>
+                                                    <Box align="center">
+                                                        <Heading level="4">Set Hook</Heading>
+                                                        <TextInput placeholder="Reward ratio" type='number'/>
+                                                        <PrimaryButton label="Set Hook"/>
+                                                    </Box>
+                                                </Box>
                                             </Box>
                                         )
                                     }

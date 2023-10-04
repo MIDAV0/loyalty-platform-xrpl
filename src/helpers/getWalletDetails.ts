@@ -44,7 +44,7 @@ export default async function getWalletDetails(address: string) : Promise<Accoun
             ledger_index: "validated"
         })
 
-        console.log('token_balances', token_balances.result);
+        // console.log('token_balances', token_balances.result);
 
         return {
             balance: accountData.result?.account_data.Balance,

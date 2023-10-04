@@ -2,11 +2,18 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+interface Store {
+  id: string;
+  wallet: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<boolean>
+  res: NextApiResponse<Store | undefined>
 ) {
-
 
   try {
     const { wallet } = req.query;
@@ -17,20 +24,14 @@ export default async function handler(
         }
     });
     
-    if (storeData[0]) {
-        res.status(200).json(true);
+    if (!storeData[0]) {
+        res.status(400).json(undefined);
         return;
     }
-
-    const store = await prisma.store.create({
-        data: {
-            wallet: wallet as string,
-        }
-    });
-
-    res.status(200).json(true);
+    
+    res.status(200).json(storeData[0]);
   } catch (error) {
     console.error(error);
-    res.status(500).json(false);
+    res.status(500).json(undefined);
   }
 }
