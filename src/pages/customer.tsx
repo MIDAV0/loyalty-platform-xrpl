@@ -28,6 +28,7 @@ import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client, AccountL
 import getWalletDetails from '../helpers/getWalletDetails';
 import setTokenIssuer from '../helpers/setTokenIssuer';
 import { Reward } from '../components/Reward';
+import { Store } from '../components/Store';
 
 const dates = [{ date: '2020-08-20', amount: 2 }, { date: '2020-08-21', amount: 47 }, { date: '2020-08-22', amount: 33 }];
 
@@ -37,6 +38,14 @@ interface AccountData {
   isHookSet?: boolean;
   tokenBalances?: AccountLinesTrustline[];
 };
+
+interface Store {
+    id: string;
+    wallet: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 export default function CustomerPage() {
   const [showTab, setShowTab] = useState<'dashboard' | 'rewards' | 'settings'>('dashboard');
@@ -49,6 +58,10 @@ export default function CustomerPage() {
   const [isLoadingUserData, setIsLoadingUserData] = useState(false); 
   const [transactions, setTransactions] = useState<any>([]);
   const [tokenBalances, setTokenBalances] = useState<AccountLinesTrustline[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
+  const [activeStore, setActiveStore] = useState<Store | null>(null);
+  const [isStoreLoading, setIsStoreLoading] = useState(false);
+
 
   const connectWallet = async () => {
       const installed = await isInstalled();
@@ -66,9 +79,8 @@ export default function CustomerPage() {
   const loadUserData = async () => {
       setIsLoadingUserData(true);
       const { balance, transactions, tokenBalances }: AccountData = await getWalletDetails(address);
-      console.log(transactions);
       
-      setTokenBalances(tokenBalances);
+      tokenBalances && setTokenBalances(tokenBalances);
 
       const filteredTxns = transactions ? transactions?.filter((transaction) => transaction.tx?.TransactionType === 'Payment') : [];
 
@@ -90,7 +102,7 @@ export default function CustomerPage() {
 
   const loadStoreData = async () => {
       try {
-          const response = await fetch(`http://localhost:3000/api/loadStoreData?wallet=${address}`,
+          const response = await fetch(`http://localhost:3000/api/loadStores`,
               {
                   method: 'GET',
                   headers: {
@@ -99,14 +111,16 @@ export default function CustomerPage() {
               }
           );
           const data = await response.json();
+          setStores(data);
       } catch (error) {
           console.log(error);
       }
   };
 
-  const loadRewards = async () => {
+  const loadRewards = async (storeAddress: string) => {
+      setIsStoreLoading(true);
       try {
-          const response = await fetch(`http://localhost:3000/api/loadRewards?wallet=${address}`,
+          const response = await fetch(`http://localhost:3000/api/loadRewards?wallet=${storeAddress}`,
               {
                   method: 'GET',
                   headers: {
@@ -115,16 +129,22 @@ export default function CustomerPage() {
               }
           );
           const data = await response.json();
-          console.log(data);
           setRewards(data);
+          setIsStoreLoading(false);
       } catch (error) {
           console.log(error);
       }
   }
 
+  const handleStoreSet = async (store: Store) => {
+        setActiveStore(store);
+        loadRewards(store.wallet);
+    }
+
   useEffect(() => {
       if (address) {
           loadUserData();
+          loadStoreData();
       }
   }, [address])
   
@@ -288,9 +308,15 @@ export default function CustomerPage() {
                                                   pad="medium"
                                                   margin="small"
                                                   direction="row-responsive"
-                                                  justify="between"    
+                                                  justify="between"   
                                               >
-                                                  <Text>Rewards {rewards.length}</Text>
+                                                  {
+                                                    activeStore ? (
+                                                        <Heading level="3">{activeStore.name}</Heading>
+                                                    ) : (
+                                                        <Heading level="3">Stores {stores.length}</Heading>
+                                                    )
+                                                  }
                                                   <Text>Search</Text>
                                               </Box>
                                               <Box             
@@ -299,18 +325,35 @@ export default function CustomerPage() {
                                                   align="center"
                                                   justify="center"
                                               >
-                                                  {
-                                                      rewards.map((reward, index) => {
+                                                  { !activeStore ? (
+                                                      stores.map((store, index) => {
                                                           return (
-                                                              <Reward
+                                                            <Box onClick={() => handleStoreSet(store)}>
+                                                              <Store
                                                                   key={index}
-                                                                  name={reward.name}
-                                                                  points={reward.price}
-                                                                  description={reward.description}
-                                                                  isCustomer={false}
-                                                              />
+                                                                  name={store.name}
+                                                                  description=""
+                                                                  address={store.wallet}
+                                                                />
+                                                            </Box>
                                                           );
                                                       })
+                                                    )
+                                                    : (
+                                                        rewards.map((reward, index) => {
+                                                            return (
+                                                              <Box>
+                                                                <Reward
+                                                                    key={index}
+                                                                    name={reward.name}
+                                                                    points={reward.price}
+                                                                    description={reward.description}
+                                                                    isCustomer={true}
+                                                                  />
+                                                              </Box>
+                                                            );
+                                                        })
+                                                      )
                                                   }
                                               </Box>
                                           </Box>

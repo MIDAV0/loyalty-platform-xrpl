@@ -53,6 +53,7 @@ export default function BusinessPage() {
     const [price, setPrice] = useState(0);
     const [transactions, setTransactions] = useState<any>([]);
     const [storeName, setStoreName] = useState('');
+    const [storeNameFromDB, setStoreNameFromDB] = useState('');
     const [domain, setDomain] = useState('');
 
     const connectWallet = async () => {
@@ -110,7 +111,7 @@ export default function BusinessPage() {
             );
             if (response.status === 200) {
                 const data = await response.json();
-                setStoreName(data.name);
+                setStoreNameFromDB(data.name);
             }
         } catch (error) {
             console.log(error);
@@ -131,6 +132,9 @@ export default function BusinessPage() {
                     })
                 }
             );
+            if (response.status === 200) {
+                setStoreNameFromDB(storeName);
+            }
         } catch (error) {
             console.log(error);
         }
@@ -380,17 +384,21 @@ export default function BusinessPage() {
                                             >
                                                 <Heading level="3">Settings</Heading>
                                                 <Box direction="row-responsive" gap="large" pad="medium">
-                                                    <Box align="center">
-                                                        <Heading level="4">Set Store Data</Heading>
-                                                        <FormField name="storeName" label="Store Name" required>
-                                                            <TextInput name="storeName" onChange={(event) => setStoreName(event.target.value)}/>
-                                                        </FormField>
-                                                        <PrimaryButton
-                                                            label="Set Data"
-                                                            disabled={!storeName}
-                                                            onClick={() => createStore()}
-                                                        />
-                                                    </Box>
+                                                    {
+                                                        !storeNameFromDB && (
+                                                            <Box align="center">
+                                                                <Heading level="4">Set Store Data</Heading>
+                                                                <FormField name="storeName" label="Store Name" required>
+                                                                    <TextInput name="storeName" onChange={(event) => setStoreName(event.target.value)}/>
+                                                                </FormField>
+                                                                <PrimaryButton
+                                                                    label="Set Data"
+                                                                    disabled={!storeName}
+                                                                    onClick={() => createStore()}
+                                                                />
+                                                            </Box>
+                                                        )
+                                                    }
                                                     <Box align="center">
                                                         <Heading level="4">Set Token</Heading>
                                                         <FormField name="domain" label="Store domain" required>
@@ -398,7 +406,7 @@ export default function BusinessPage() {
                                                         </FormField>
                                                         <PrimaryButton
                                                             label="Set token issuer"
-                                                            disabled={!domain}
+                                                            disabled={!domain || !storeNameFromDB}
                                                             onClick={() => setTokenIssuer(address, domain)}
                                                         />
                                                     </Box>
