@@ -1,6 +1,5 @@
 import * as xrpl from 'xrpl';
 import { signTransaction, SignTransactionRequest, SignTransactionResponse } from '@gemwallet/api';
-import { stringToHex } from './stringToHex';
 
 export default async function setTokenIssuer(address: string, domain: string) {
     const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233");
@@ -12,11 +11,10 @@ export default async function setTokenIssuer(address: string, domain: string) {
             "Account": address,
             "TransferRate": 0,
             "TickSize": 5,
-            "Domain": stringToHex(domain),
-            "SetFlag": xrpl.AccountSetAsfFlags.asfDefaultRipple,
-            "Flags": (xrpl.AccountSetTfFlags.tfDisallowXRP |
-                    xrpl.AccountSetTfFlags.tfRequireDestTag)
+            "Domain": xrpl.convertStringToHex(domain),
         }
+        // "SetFlag": xrpl.AccountSetAsfFlags.asfDefaultRipple
+
 
         // @ts-ignore
         signTransaction({ transaction }).then((response: SignTransactionResponse) => {

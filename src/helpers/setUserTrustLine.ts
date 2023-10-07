@@ -1,37 +1,40 @@
 import * as xrpl from 'xrpl';
-import { setTrustline, SignTransactionResponse } from '@gemwallet/api';
+import { submitBulkTransactions } from '@gemwallet/api';
 
-export default async function setUserTrustline(client: xrpl.Client, issuerAddress: string, token: string) {
+type TransactionWithID = xrpl.Transaction & { 
+  ID?: string
+};
+
+export default async function setUserTrustLine(userAddress: string, issuerAddress: string, domain: string, token: string) {
     try {
-        const trustline = {
-            limitAmount: {
-              currency: token,
-              issuer: issuerAddress,
-              value: "10000000",
-            },
-            memos: [
-              {
-                memo: {
-                  memoType: "4465736372697074696f6e",
-                  memoData: "54657374206d656d6f",
-                },
-              },
-            ],
-            fee: "0",
-            flags: {
-              tfClearFreeze: false,
-              tfClearNoRipple: false,
-              tfSetFreeze: true,
-              tfSetNoRipple: true,
-              tfSetfAuth: false,
-            },
-        };
+        const transactions: TransactionWithID[] = [
+          {
+            ID: '001',
+            "TransactionType": "AccountSet",
+            "Account": userAddress,
+            "Domain": xrpl.convertStringToHex(domain),
+            "SetFlag": xrpl.AccountSetAsfFlags.asfRequireAuth,
+          },
+          {
+            ID: '002',
+            "TransactionType": "TrustSet",
+            "Account": userAddress,
+            "LimitAmount": {
+              "currency": token,
+              "issuer": issuerAddress,
+              "value": "10000000000" // Large limit, arbitrarily chosen
+            }
+          }
+        ];
 
-        // @ts-ignore
-        setTrustline({ transaction }).then((response: SignTransactionResponse) => {
-            console.log(response);
-        }).catch((error: any) => {
-            console.log(error);
+        submitBulkTransactions({
+          transactions,
+          onError: 'abort',
+          waitForHashes: true
+        }).then((response) => {
+          console.log('Received response: ', response);
+        }).catch((error) => {
+          console.error("Transactions submission failed", error);
         });
 
     } catch (error) {
