@@ -3,24 +3,13 @@ import {
   Button,
   Heading,
   Layer,
-  Menu,
-  Paragraph,
-  TextInput,
   Text,
-  ResponsiveContext,
   Spinner,
   DataTable,
-  Meter,
   DataChart,
   Main,
   Header,
-  Form,
-  FormField,
-  InfiniteScroll,
-  Data,
 } from 'grommet';
-import { Layout, PrimaryButton, Tasks } from '../components';
-import { Chat, CreditCard, Scorecard, Search, Image, Print } from 'grommet-icons';
 import { useEffect, useState } from 'react';
 import { isInstalled, getAddress } from '@gemwallet/api'
 import { toast } from 'react-toastify';
@@ -231,7 +220,11 @@ export default function CustomerPage() {
           <Main>
               {
                   isConnected ? (
-                      isLoadingUserData ? (<Box><Spinner /></Box>) : (
+                      isLoadingUserData ? (
+                            <Box fill align="center" pad={{ vertical: "18%" }}>
+                                <Spinner size="large" />
+                            </Box>
+                        ) : (
                           <Box fill>
                               <Box direction="row-responsive" width="100%" margin={{top: 'small'}} >
                                   <Box width="15%" height="large">
@@ -275,21 +268,62 @@ export default function CustomerPage() {
                                                           size={{ width: 'fill' }}
                                                       />
                                                   </Box>
-                                                  <Box border round="small" pad="medium" margin="small"s>
+                                                  <Box border round="small" pad="medium" margin="small">
                                                       <DataTable
+                                                          size="medium"
                                                           columns={[
                                                           {
                                                               property: 'from',
                                                               header: <Text>From</Text>,
                                                               primary: true,
+                                                              render: (datum: any) => (
+                                                                <Box pad={{ vertical: 'xsmall' }}>
+                                                                    {
+                                                                        datum.from === "You" ?
+                                                                            <Text weight="bold" color="brand">You</Text>
+                                                                            :
+                                                                            <Text 
+                                                                                tip={{ 
+                                                                                    content: datum.from,
+                                                                                    dropProps: { align: { top: 'bottom' } },
+                                                                                    plain: true 
+                                                                                }}>
+                                                                                {datum.from.slice(0, 6) + '...' + datum.from.slice(-4)}
+                                                                            </Text> 
+                                                                    }
+                                                                </Box>
+                                                            ),
+
                                                           },
                                                           {
                                                               property: 'to',
                                                               header: <Text>To</Text>,
+                                                              render: (datum: any) => (
+                                                                <Box pad={{ vertical: 'xsmall' }}>
+                                                                    {
+                                                                        datum.to === "You" ?
+                                                                            <Text weight="bold" color="brand">You</Text>
+                                                                            :
+                                                                            <Text 
+                                                                                tip={{ 
+                                                                                    content: datum.to,
+                                                                                    dropProps: { align: { top: 'bottom' } },
+                                                                                    plain: true 
+                                                                                }}>
+                                                                                {datum.to.slice(0, 6) + '...' + datum.to.slice(-4)}
+                                                                            </Text> 
+                                                                    }
+                                                                </Box>
+                                                            ),
                                                           },
                                                           {
                                                               property: 'currency',
                                                               header: <Text>Currency</Text>,
+                                                              render: (datum: any) => (
+                                                                <Box pad={{ vertical: 'xsmall' }}>
+                                                                    <Text weight="bold">{datum.currency}</Text>
+                                                                </Box>
+                                                            ),
                                                           },
                                                           {
                                                               property: 'amount',
@@ -327,84 +361,93 @@ export default function CustomerPage() {
                                   {
                                       showTab === 'rewards' && (
                                           <Box width="85%">
-                                              <Box 
-                                                  pad="medium"
-                                                  margin="small"
-                                                  direction="row-responsive"
-                                                  justify="between" 
-                                                  align="center"  
-                                              >
-                                                  {
-                                                    activeStore ? (
-                                                        <Box>
-                                                            <Heading level="3">{activeStore.name}</Heading>
-                                                            <Text>{activeStore.domain}</Text>
-                                                            <Text>{activeStore.token}</Text>
-                                                        </Box>
-                                                    ) : (
-                                                        <Heading level="3">Stores {stores.length}</Heading>
-                                                    )
-                                                  }
-                                                  <Text>Search</Text>
-                                                  { activeStore && (
-                                                    <Button
-                                                        primary
-                                                        label="Go Back"
-                                                        onClick={() => setActiveStore(null)}
-                                                    />
-                                                  )}
-                                              </Box>
-                                              <Box             
-                                                  direction="row-responsive"
-                                                  wrap
-                                                  align="center"
-                                                  justify="center"
-                                              >
-                                                  { !activeStore && (
-                                                      stores.map((store, index) => {
-                                                          return (
-                                                            <Box onClick={() => handleStoreSet(store)}>
-                                                              <Store
-                                                                  key={index}
-                                                                  name={store.name}
-                                                                  description=""
-                                                                  address={store.wallet}
-                                                                />
-                                                            </Box>
-                                                          );
-                                                      })
-                                                    )
-                                                }
-                                                    { activeStore && isTrustLineSet && (
-                                                        rewards.map((reward: Reward, index) => {
-                                                            return (
-                                                              <Box>
-                                                                <Reward
-                                                                    key={index}
-                                                                    name={reward.name}
-                                                                    points={reward.price}
-                                                                    description={reward.description}
-                                                                    isCustomer={true}
-                                                                    shopAddress={activeStore.wallet}
-                                                                    token={activeStore.token}
-                                                                  />
-                                                              </Box>
-                                                            );
-                                                        })
-                                                      )
-                                                  }
-                                                  { activeStore && !isTrustLineSet && (
-                                                        <Box>
-                                                            <Text>Set Trust Line</Text>
+                                            { isStoreLoading ? (
+                                                <Box fill align="center" pad={{ vertical: "18%" }}>
+                                                    <Spinner size="large" />
+                                                </Box>
+                                            )
+                                            : (
+                                                <Box>
+                                                    <Box 
+                                                        pad="medium"
+                                                        margin="small"
+                                                        direction="row-responsive"
+                                                        justify="between" 
+                                                        align="center"  
+                                                    >
+                                                        {
+                                                            activeStore ? (
+                                                                <Box>
+                                                                    <Heading level="3">{activeStore.name}</Heading>
+                                                                    <Text>{activeStore.domain}</Text>
+                                                                    <Text>{activeStore.token}</Text>
+                                                                </Box>
+                                                            ) : (
+                                                                <Heading level="3">Stores {stores.length}</Heading>
+                                                            )
+                                                        }
+                                                        <Text>Search</Text>
+                                                        { activeStore && (
                                                             <Button
                                                                 primary
-                                                                label="Set Trust Line"
-                                                                onClick={() => handleTrustLineSet()}
+                                                                label="Go Back"
+                                                                onClick={() => setActiveStore(null)}
                                                             />
-                                                        </Box>
-                                                    )
-                                                  }
-                                              </Box>
+                                                        )}
+                                                    </Box>
+                                                    <Box             
+                                                        direction="row-responsive"
+                                                        wrap
+                                                        align="center"
+                                                        justify="center"
+                                                        >
+                                                        { !activeStore && (
+                                                            stores.map((store, index) => {
+                                                                return (
+                                                                    <Box onClick={() => handleStoreSet(store)}>
+                                                                    <Store
+                                                                        key={index}
+                                                                        name={store.name}
+                                                                        description=""
+                                                                        address={store.wallet}
+                                                                        />
+                                                                    </Box>
+                                                                );
+                                                            })
+                                                            )
+                                                        }
+                                                            { activeStore && isTrustLineSet && (
+                                                                rewards.map((reward: Reward, index) => {
+                                                                    return (
+                                                                    <Box>
+                                                                        <Reward
+                                                                            key={index}
+                                                                            name={reward.name}
+                                                                            points={reward.price}
+                                                                            description={reward.description}
+                                                                            isCustomer={true}
+                                                                            shopAddress={activeStore.wallet}
+                                                                            token={activeStore.token}
+                                                                        />
+                                                                    </Box>
+                                                                    );
+                                                                })
+                                                            )
+                                                        }
+                                                        { activeStore && !isTrustLineSet && (
+                                                                <Box>
+                                                                    <Text>Set Trust Line</Text>
+                                                                    <Button
+                                                                        primary
+                                                                        label="Set Trust Line"
+                                                                        onClick={() => handleTrustLineSet()}
+                                                                    />
+                                                                </Box>
+                                                            )
+                                                        }
+                                                    </Box>
+                                                </Box>
+                                            )}
                                           </Box>
                                       )
                                   }
@@ -414,16 +457,17 @@ export default function CustomerPage() {
                   )
                   : (
                       <Box fill align="center" justify="center">
-                          <Box width="medium" gap="medium">
-                              <Text>
-                                  Connect your wallet to continue
-                              </Text>
-                              { installGemWallet && (
-                                  <Text>
-                                      Install gem wallet
-                                  </Text>
-                              )}
-                          </Box>
+                            <Box width="medium" gap="medium" align="center" pad="xxlarge">
+                                <Heading level="3">Connect your wallet</Heading>
+                                { installGemWallet && (
+                                    <Button 
+                                        label="Install Gem Wallet"
+                                        primary
+                                        href="https://gemwallet.app/"
+                                        target="_blank"
+                                    />
+                                )}
+                            </Box>
                       </Box>
                   )
               }         

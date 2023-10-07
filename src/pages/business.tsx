@@ -3,28 +3,23 @@ import {
     Button,
     Heading,
     Layer,
-    Menu,
-    Paragraph,
     TextInput,
     Text,
-    ResponsiveContext,
     Spinner,
     DataTable,
-    Meter,
     DataChart,
     Main,
     Header,
     Form,
     FormField,
 } from 'grommet';
-import { Layout, PrimaryButton, Tasks } from '../components';
-import { Chat, CreditCard, Scorecard, Search, Image, Print } from 'grommet-icons';
+import { PrimaryButton } from '../components';
 import { useEffect, useState } from 'react';
 import { isInstalled, getAddress } from '@gemwallet/api'
 import { toast } from 'react-toastify';
 import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client, AccountLinesResponse, AccountLinesTrustline } from 'xrpl';
 import getWalletDetails from '../helpers/getWalletDetails';
-import setTokenIssuer from '../helpers/setTokenIssuer';
+import setTokenIssuer from '../helpers/setMerchantHook';
 import { Reward } from '../components/Reward';
 import Head from 'next/head';
 
@@ -35,6 +30,15 @@ interface AccountData {
     transactions?: AccountTxTransaction[];
     isHookSet?: boolean;
     tokenBalances?: AccountLinesTrustline[];
+};
+type Store = {
+    id: string;
+    wallet: string;
+    name: string;
+    domain: string;
+    token: string;
+    createdAt: Date;
+    updatedAt: Date;
 };
 
 export default function BusinessPage() {
@@ -54,6 +58,8 @@ export default function BusinessPage() {
     const [transactions, setTransactions] = useState<any>([]);
     const [storeName, setStoreName] = useState('');
     const [storeNameFromDB, setStoreNameFromDB] = useState('');
+    const [storeData, setStoreData] = useState<Store | null>(null);
+
     const [domain, setDomain] = useState('');
     const [tokenSymbol, setTokenSymbol] = useState('');
 
@@ -112,7 +118,7 @@ export default function BusinessPage() {
             );
             if (response.status === 200) {
                 const data = await response.json();
-                setStoreNameFromDB(data.name);
+                setStoreData(data);
             }
         } catch (error) {
             console.log(error);
@@ -136,9 +142,8 @@ export default function BusinessPage() {
                 }
             );
             if (response.status === 200) {
-                setStoreNameFromDB(storeName);
-                setDomain(domain);
-                setTokenSymbol(tokenSymbol);
+                const data = await response.json();
+                setStoreData(data);
             }
         } catch (error) {
             console.log(error);
@@ -253,7 +258,11 @@ export default function BusinessPage() {
             <Main>
                 {
                     isConnected ? (
-                        isLoadingUserData ? (<Box><Spinner /></Box>) : (
+                        isLoadingUserData ? (
+                            <Box fill align="center" pad={{ vertical: "18%" }}>
+                                <Spinner size="large" />
+                            </Box>
+                            ) : (
                             <Box fill>
                                 <Box direction="row-responsive" width="100%" margin={{top: 'small'}} >
                                     <Box width="15%" height="large">
@@ -305,21 +314,61 @@ export default function BusinessPage() {
                                                             size={{ width: 'fill' }}
                                                         />
                                                     </Box>
-                                                    <Box border round="small" pad="medium" margin="small"s>
+                                                    <Box border round="small" pad="medium" margin="small">
                                                         <DataTable
+                                                            size="medium"
                                                             columns={[
                                                             {
                                                                 property: 'from',
                                                                 header: <Text>From</Text>,
                                                                 primary: true,
+                                                                render: (datum: any) => (
+                                                                    <Box pad={{ vertical: 'xsmall' }}>
+                                                                        {
+                                                                            datum.from === "You" ?
+                                                                                <Text weight="bold" color="brand">You</Text>
+                                                                                :
+                                                                                <Text 
+                                                                                    tip={{ 
+                                                                                        content: datum.from,
+                                                                                        dropProps: { align: { top: 'bottom' } },
+                                                                                        plain: true 
+                                                                                    }}>
+                                                                                    {datum.from.slice(0, 6) + '...' + datum.from.slice(-4)}
+                                                                                </Text> 
+                                                                        }
+                                                                    </Box>
+                                                                ),
                                                             },
                                                             {
                                                                 property: 'to',
                                                                 header: <Text>To</Text>,
+                                                                render: (datum: any) => (
+                                                                    <Box pad={{ vertical: 'xsmall' }}>
+                                                                        {
+                                                                            datum.to === "You" ?
+                                                                                <Text weight="bold" color="brand">You</Text>
+                                                                                :
+                                                                                <Text 
+                                                                                    tip={{ 
+                                                                                        content: datum.to,
+                                                                                        dropProps: { align: { top: 'bottom' } },
+                                                                                        plain: true 
+                                                                                    }}>
+                                                                                    {datum.to.slice(0, 6) + '...' + datum.to.slice(-4)}
+                                                                                </Text> 
+                                                                        }
+                                                                    </Box>
+                                                                ),
                                                             },
                                                             {
                                                                 property: 'currency',
                                                                 header: <Text>Currency</Text>,
+                                                                render: (datum: any) => (
+                                                                    <Box pad={{ vertical: 'xsmall' }}>
+                                                                        <Text weight="bold">{datum.currency}</Text>
+                                                                    </Box>
+                                                                ),
                                                             },
                                                             {
                                                                 property: 'amount',
@@ -390,7 +439,7 @@ export default function BusinessPage() {
                                                 <Heading level="3">Settings</Heading>
                                                 <Box direction="row-responsive" gap="large" pad="medium">
                                                     {
-                                                        (!storeNameFromDB || !domain || !tokenSymbol) && (
+                                                        (!storeData) && (
                                                             <Box align="center">
                                                                 <Heading level="4">Set Store Data</Heading>
                                                                 <FormField name="storeName" label="Store Name" required>
@@ -414,7 +463,7 @@ export default function BusinessPage() {
                                                         <Heading level="4">Set Token</Heading>
                                                         <PrimaryButton
                                                             label="Set token issuer"
-                                                            disabled={!domain || !storeNameFromDB}
+                                                            disabled={!domain || !storeData}
                                                             onClick={() => setTokenIssuer(address, domain)}
                                                         />
                                                     </Box>
@@ -465,14 +514,15 @@ export default function BusinessPage() {
                     )
                     : (
                         <Box fill align="center" justify="center">
-                            <Box width="medium" gap="medium">
-                                <Text>
-                                    Connect your wallet to continue
-                                </Text>
+                            <Box width="medium" gap="medium" align="center" pad="xxlarge">
+                                <Heading level="3">Connect your wallet</Heading>
                                 { installGemWallet && (
-                                    <Text>
-                                        Install gem wallet
-                                    </Text>
+                                    <Button 
+                                        label="Install Gem Wallet"
+                                        primary
+                                        href="https://gemwallet.app/"
+                                        target="_blank"
+                                    />
                                 )}
                             </Box>
                         </Box>
