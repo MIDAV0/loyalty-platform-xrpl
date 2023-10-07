@@ -55,6 +55,7 @@ export default function BusinessPage() {
     const [storeName, setStoreName] = useState('');
     const [storeNameFromDB, setStoreNameFromDB] = useState('');
     const [domain, setDomain] = useState('');
+    const [tokenSymbol, setTokenSymbol] = useState('');
 
     const connectWallet = async () => {
         const installed = await isInstalled();
@@ -73,7 +74,6 @@ export default function BusinessPage() {
         setIsLoadingUserData(true);
         const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(address);        
 
-        // console.log('transactions', transactions);
 
         const filteredTxns = transactions ? transactions?.filter((transaction) => transaction.tx?.TransactionType === 'Payment') : [];
 
@@ -82,14 +82,15 @@ export default function BusinessPage() {
                 from: txn.tx?.Account === address ? 'You' : txn.tx?.Account,
                 to: txn.tx?.Destination ? (txn.tx?.Destination === address ? 'You' : txn.tx?.Destination) : '',
                 currency: txn.tx?.Amount.currency ? txn.tx?.Amount.currency : 'XRP',
-                amount: dropsToXrp(txn.tx?.Amount.value ? txn.tx?.Amount.value : txn.tx?.Amount), 
+                amount: txn.tx?.Amount.value ? txn.tx?.Amount.value : dropsToXrp(txn.tx?.Amount), 
             }
         });
 
         setTransactions(filteredTxnsData);
 
 
-        setHook(isHookSet ? true : false);
+        // setHook(isHookSet ? true : false);
+        setHook(true);
         if (!isHookSet) {
             setShowTab('settings');
         }
@@ -129,11 +130,15 @@ export default function BusinessPage() {
                     body: JSON.stringify({
                         wallet: address,
                         name: storeName,
+                        domain: domain,
+                        token: tokenSymbol
                     })
                 }
             );
             if (response.status === 200) {
                 setStoreNameFromDB(storeName);
+                setDomain(domain);
+                setTokenSymbol(tokenSymbol);
             }
         } catch (error) {
             console.log(error);
@@ -385,15 +390,21 @@ export default function BusinessPage() {
                                                 <Heading level="3">Settings</Heading>
                                                 <Box direction="row-responsive" gap="large" pad="medium">
                                                     {
-                                                        !storeNameFromDB && (
+                                                        (!storeNameFromDB || !domain || !tokenSymbol) && (
                                                             <Box align="center">
                                                                 <Heading level="4">Set Store Data</Heading>
                                                                 <FormField name="storeName" label="Store Name" required>
                                                                     <TextInput name="storeName" onChange={(event) => setStoreName(event.target.value)}/>
                                                                 </FormField>
+                                                                <FormField name="domain" label="Store Domain" required>
+                                                                    <TextInput name="domain" onChange={(event) => setDomain(event.target.value)}/>
+                                                                </FormField>
+                                                                <FormField name="tokenName" label="Token Name" required>
+                                                                    <TextInput name="tokenName" onChange={(event) => setTokenSymbol(event.target.value)}/>
+                                                                </FormField>
                                                                 <PrimaryButton
                                                                     label="Set Data"
-                                                                    disabled={!storeName}
+                                                                    disabled={!storeName || !domain || !tokenSymbol}
                                                                     onClick={() => createStore()}
                                                                 />
                                                             </Box>
@@ -401,9 +412,6 @@ export default function BusinessPage() {
                                                     }
                                                     <Box align="center">
                                                         <Heading level="4">Set Token</Heading>
-                                                        <FormField name="domain" label="Store domain" required>
-                                                            <TextInput name="domain" onChange={(event) => setDomain(event.target.value)}/>
-                                                        </FormField>
                                                         <PrimaryButton
                                                             label="Set token issuer"
                                                             disabled={!domain || !storeNameFromDB}

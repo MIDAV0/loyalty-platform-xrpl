@@ -26,7 +26,7 @@ import { isInstalled, getAddress } from '@gemwallet/api'
 import { toast } from 'react-toastify';
 import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client, AccountLinesResponse, AccountLinesTrustline } from 'xrpl';
 import getWalletDetails from '../helpers/getWalletDetails';
-import setTokenIssuer from '../helpers/setTokenIssuer';
+import setUserTrustLine from '../helpers/setUserTrustLine';
 import { Reward } from '../components/Reward';
 import { Store } from '../components/Store';
 
@@ -43,9 +43,18 @@ interface Store {
     id: string;
     wallet: string;
     name: string;
+    domain: string;
+    token: string;
     createdAt: Date;
     updatedAt: Date;
 }
+
+type Reward = {
+    name: string;
+    description: string;
+    price: number;
+    storeWallet: string;
+};
 
 export default function CustomerPage() {
   const [showTab, setShowTab] = useState<'dashboard' | 'rewards' | 'settings'>('dashboard');
@@ -61,6 +70,7 @@ export default function CustomerPage() {
   const [stores, setStores] = useState<Store[]>([]);
   const [activeStore, setActiveStore] = useState<Store | null>(null);
   const [isStoreLoading, setIsStoreLoading] = useState(false);
+  const [isTrustLineSet, setIsTrustLineSet] = useState(false);
 
 
   const connectWallet = async () => {
@@ -89,7 +99,7 @@ export default function CustomerPage() {
               from: txn.tx?.Account === address ? 'You' : txn.tx?.Account,
               to: txn.tx?.Destination ? (txn.tx?.Destination === address ? 'You' : txn.tx?.Destination) : '',
               currency: txn.tx?.Amount.currency ? txn.tx?.Amount.currency : 'XRP',
-              amount: dropsToXrp(txn.tx?.Amount.value ? txn.tx?.Amount.value : txn.tx?.Amount), 
+              amount: txn.tx?.Amount.value ? txn.tx?.Amount.value : dropsToXrp(txn.tx?.Amount), 
           }
       });
 
@@ -138,7 +148,20 @@ export default function CustomerPage() {
 
   const handleStoreSet = async (store: Store) => {
         setActiveStore(store);
+        const trustLine = tokenBalances.find((tokenBalance) => (tokenBalance.account === store.wallet && tokenBalance.currency === store.token));
+        if (trustLine) {
+            setIsTrustLineSet(true);
+        } else {
+            setIsTrustLineSet(false);
+        }
         loadRewards(store.wallet);
+    }
+
+    const handleTrustLineSet = async () => {
+        if (!activeStore)
+            return;
+
+        await setUserTrustLine(address, activeStore.wallet, activeStore.domain, activeStore.token);
     }
 
   useEffect(() => {
@@ -308,16 +331,28 @@ export default function CustomerPage() {
                                                   pad="medium"
                                                   margin="small"
                                                   direction="row-responsive"
-                                                  justify="between"   
+                                                  justify="between" 
+                                                  align="center"  
                                               >
                                                   {
                                                     activeStore ? (
-                                                        <Heading level="3">{activeStore.name}</Heading>
+                                                        <Box>
+                                                            <Heading level="3">{activeStore.name}</Heading>
+                                                            <Text>{activeStore.domain}</Text>
+                                                            <Text>{activeStore.token}</Text>
+                                                        </Box>
                                                     ) : (
                                                         <Heading level="3">Stores {stores.length}</Heading>
                                                     )
                                                   }
                                                   <Text>Search</Text>
+                                                  { activeStore && (
+                                                    <Button
+                                                        primary
+                                                        label="Go Back"
+                                                        onClick={() => setActiveStore(null)}
+                                                    />
+                                                  )}
                                               </Box>
                                               <Box             
                                                   direction="row-responsive"
@@ -325,7 +360,7 @@ export default function CustomerPage() {
                                                   align="center"
                                                   justify="center"
                                               >
-                                                  { !activeStore ? (
+                                                  { !activeStore && (
                                                       stores.map((store, index) => {
                                                           return (
                                                             <Box onClick={() => handleStoreSet(store)}>
@@ -339,8 +374,9 @@ export default function CustomerPage() {
                                                           );
                                                       })
                                                     )
-                                                    : (
-                                                        rewards.map((reward, index) => {
+                                                }
+                                                    { activeStore && isTrustLineSet && (
+                                                        rewards.map((reward: Reward, index) => {
                                                             return (
                                                               <Box>
                                                                 <Reward
@@ -349,11 +385,24 @@ export default function CustomerPage() {
                                                                     points={reward.price}
                                                                     description={reward.description}
                                                                     isCustomer={true}
+                                                                    shopAddress={activeStore.wallet}
+                                                                    token={activeStore.token}
                                                                   />
                                                               </Box>
                                                             );
                                                         })
                                                       )
+                                                  }
+                                                  { activeStore && !isTrustLineSet && (
+                                                        <Box>
+                                                            <Text>Set Trust Line</Text>
+                                                            <Button
+                                                                primary
+                                                                label="Set Trust Line"
+                                                                onClick={() => handleTrustLineSet()}
+                                                            />
+                                                        </Box>
+                                                    )
                                                   }
                                               </Box>
                                           </Box>
