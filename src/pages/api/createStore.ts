@@ -15,7 +15,7 @@ export default async function handler(
   res: NextApiResponse<Store | undefined>
 ) {
     try {
-        const { wallet, name } = req.body;
+        const { wallet, name, domain, token } = req.body;
 
         if (!wallet || !name) {
             res.status(400).json(undefined);
@@ -26,6 +26,8 @@ export default async function handler(
             data: {
                 wallet: wallet as string,
                 name: name as string,
+                domain: domain as string,
+                token: token as string
             }
         });
 

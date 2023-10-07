@@ -6,6 +6,8 @@ interface Store {
   id: string;
   wallet: string;
   name: string;
+  domain: string;
+  token: string;
   createdAt: Date;
   updatedAt: Date;
 }

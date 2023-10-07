@@ -6,6 +6,8 @@ interface Store {
   id: string;
   wallet: string;
   name: string;
+  domain: string;
+  token: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,8 +18,6 @@ export default async function handler(
 ) {
 
   try {
-    const { wallet } = req.query;
-
     const storeData = await prisma.store.findMany();
     
     res.status(200).json(storeData);
