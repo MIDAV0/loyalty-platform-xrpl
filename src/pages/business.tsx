@@ -17,11 +17,10 @@ import { PrimaryButton } from '../components';
 import { useEffect, useState } from 'react';
 import { isInstalled, getAddress } from '@gemwallet/api'
 import { toast } from 'react-toastify';
-import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client, AccountLinesResponse, AccountLinesTrustline } from 'xrpl';
+import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client, AccountLinesResponse, AccountLinesTrustline, rippleTimeToUnixTime, rippleTimeToISOTime } from 'xrpl';
 import getWalletDetails from '../helpers/getWalletDetails';
 import setTokenIssuer from '../helpers/setMerchantHook';
 import { Reward } from '../components/Reward';
-import Head from 'next/head';
 
 const dates = [{ date: '2020-08-20', amount: 2 }, { date: '2020-08-21', amount: 47 }, { date: '2020-08-22', amount: 33 }];
 
@@ -59,6 +58,9 @@ export default function BusinessPage() {
     const [storeName, setStoreName] = useState('');
     const [storeNameFromDB, setStoreNameFromDB] = useState('');
     const [storeData, setStoreData] = useState<Store | null>(null);
+    const [storeTokenBalance, setStoreTokenBalance] = useState(0);
+    const [loyalCustomers, setLoyalCustomers] = useState(0);
+    const [txDates, setTxDates] = useState<any[]>([]);
 
     const [domain, setDomain] = useState('');
     const [tokenSymbol, setTokenSymbol] = useState('');
@@ -80,6 +82,8 @@ export default function BusinessPage() {
         setIsLoadingUserData(true);
         const { balance, transactions, isHookSet }: AccountData = await getWalletDetails(address);        
 
+        console.log(transactions);
+
 
         const filteredTxns = transactions ? transactions?.filter((transaction) => transaction.tx?.TransactionType === 'Payment') : [];
 
@@ -91,6 +95,25 @@ export default function BusinessPage() {
                 amount: txn.tx?.Amount.value ? txn.tx?.Amount.value : dropsToXrp(txn.tx?.Amount), 
             }
         });
+
+        const txDates = filteredTxns.filter((transaction) => transaction.tx?.Account !== address)?.map((txn) => rippleTimeToISOTime(txn.tx?.date).substring(0,10));
+        console.log(txDates);
+
+        const frequency = txDates.reduce((acc: any, date) => {
+            acc[date] = (acc[date] || 0) + 1;
+            return acc;
+          }, {});
+
+        const mappedDates = Object.keys(frequency).map((date) => {
+            return {
+                date,
+                amount: frequency[date]
+            }
+        });
+
+        setTxDates(mappedDates);
+
+        console.log(mappedDates);
 
         setTransactions(filteredTxnsData);
 
@@ -303,11 +326,11 @@ export default function BusinessPage() {
                                                 <Box width="70%">
                                                     <Box border round="small" pad="medium" margin="small">
                                                         <DataChart
-                                                            data={dates}
+                                                            data={txDates}
                                                             series={['date', 'amount']}
                                                             chart={[
                                                                 { property: 'amount', type: 'line', opacity: 'medium', thickness: 'xsmall', color: 'brand' },
-                                                                { property: 'amount', type: 'point', point: 'circle', thickness: 'medium' }
+                                                                { property: 'amount', type: 'point', point: 'circle', thickness: 'small' }
                                                             ]}
                                                             guide={{ x: { granularity: 'fine' } }}
                                                             detail
@@ -384,6 +407,10 @@ export default function BusinessPage() {
                                                         <Box fill="vertical" align="center">
                                                             <Heading level="3">Total transactions</Heading>
                                                             <Text size="large">{transactions?.length}</Text>
+                                                            <Heading level="3">{storeData?.token} tokens issued</Heading>
+                                                            <Text size="large">{storeTokenBalance}</Text>
+                                                            <Heading level="3">Loyal customers</Heading>
+                                                            <Text size="large">{loyalCustomers}</Text>
                                                         </Box>
                                                     </Box>
                                                 </Box>            
@@ -421,6 +448,7 @@ export default function BusinessPage() {
                                                                     name={reward.name}
                                                                     points={reward.price}
                                                                     description={reward.description}
+                                                                    token={storeData?.token}
                                                                     isCustomer={false}
                                                                 />
                                                             );
@@ -479,7 +507,7 @@ export default function BusinessPage() {
                                     {
                                         showCreateReward && (
                                             <Layer responsive={true} onClickOutside={() => setShowCreateReward(false)}>
-                                                <Box width="xlarge" pad="large" border>
+                                                <Box width="large" pad="large" border>
                                                     <Form>
                                                         <FormField name="name" label="Reward name" required>
                                                             <TextInput name="name" onChange={(event) => setName(event.target.value)}/>

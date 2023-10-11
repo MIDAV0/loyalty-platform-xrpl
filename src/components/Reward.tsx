@@ -1,4 +1,4 @@
-import { Text, Button, Card, CardBody, CardFooter, CardHeader, Image, Box } from 'grommet';
+import { Text, Button, Card, CardBody, CardFooter, CardHeader, Image, Box, Heading } from 'grommet';
 import sendTokens from '../helpers/sendTokens';
 
 interface RewardProps {
@@ -18,7 +18,11 @@ export const Reward = (props: RewardProps) => {
 
     return (
         <Card margin="small" flex={false} height="medium" width="medium" background="light-1">
-            <CardHeader pad="medium">{props.name}</CardHeader>
+            <CardHeader pad={{horizontal: "medium", top: "medium"}}>
+                <Heading level="3" margin="none">
+                    {props.name}
+                </Heading>
+            </CardHeader>
             <CardBody pad="medium">
                 <Text>
                     {props.description}
@@ -29,7 +33,7 @@ export const Reward = (props: RewardProps) => {
                     alt="reward image"
                 />
             </CardBody>
-            <CardFooter pad={{horizontal: "small"}} background="light-2">
+            <CardFooter pad={{horizontal: "medium", vertical: "small"}} background="light-2">
                 {   props.isCustomer &&
                     <Button
                         primary
@@ -38,8 +42,8 @@ export const Reward = (props: RewardProps) => {
                         onClick={handlePurchase}
                     />
                 }
-                <Text alignSelf="end">
-                    {props.points}
+                <Text alignSelf="end" weight="bold">
+                    Price: {props.points} {props.token}
                 </Text>
             </CardFooter>
         </Card>

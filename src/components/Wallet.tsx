@@ -1,6 +1,5 @@
 import { Box, Button, Heading, Layer, Text } from 'grommet';
 import { useContext, useState, useEffect } from 'react';
-import { WalletContext } from '../context/walletContext';
 import { isInstalled, getAddress } from '@gemwallet/api'
 import { toast } from 'react-toastify';
 import { dropsToXrp, AccountTxTransaction} from 'xrpl';
