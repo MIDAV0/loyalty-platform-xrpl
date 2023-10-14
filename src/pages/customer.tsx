@@ -199,7 +199,7 @@ export default function CustomerPage() {
               LOGO
               </Box>
               <Button
-                  primary
+                  secondary
                   label={
                       isConnected && address
                       ? address.slice(0, 6) + '...' + address.slice(-4) + ' ' + balance + ' XRP'
