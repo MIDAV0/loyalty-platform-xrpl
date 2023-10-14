@@ -238,7 +238,7 @@ export default function BusinessPage() {
                         </Box>
                         <Box direction="row" alignSelf="end" gap="small">
                         <Button
-                            secondary
+                            primary
                             label="Go Back"
                             onClick={() => setShowWalletSettings(false)}
                         />
@@ -247,7 +247,7 @@ export default function BusinessPage() {
                 </Layer>
             )}
             <Header
-                direction="row"
+                direction="row-responsive"
                 align="center"
                 justify="evenly"
                 pad={{ vertical: 'small', horizontal: 'xlarge' }}
@@ -260,7 +260,7 @@ export default function BusinessPage() {
                 LOGO
                 </Box>
                 <Button
-                    primary
+                    secondary
                     label={
                         isConnected && address
                         ? address.slice(0, 6) + '...' + address.slice(-4) + ' ' + balance + ' XRP'
@@ -301,28 +301,28 @@ export default function BusinessPage() {
                                             <Button
                                                 onClick={() => setShowTab('dashboard')}
                                                 label="Dashboard"
-                                                primary={showTab === 'dashboard'}
+                                                secondary={showTab === 'dashboard'}
                                                 plain={showTab !== 'dashboard'}
                                                 disabled={!hook}
                                             />
                                             <Button
                                                 onClick={() => setShowTab('rewards')}
                                                 label="Rewards"
-                                                primary={showTab === 'rewards'}
+                                                secondary={showTab === 'rewards'}
                                                 plain={showTab !== 'rewards'}
                                                 disabled={!hook}
                                             />   
                                             <Button
                                                 onClick={() => setShowTab('settings')}
                                                 label="Settings"
-                                                primary={showTab === 'settings'}
+                                                secondary={showTab === 'settings'}
                                                 plain={showTab !== 'settings'}
                                             />                      
                                         </Box>
                                     </Box>
                                     {
                                         showTab === 'dashboard' && (
-                                            <Box width="85%" direction="row">
+                                            <Box width="85%" direction="row-responsive">
                                                 <Box width="70%">
                                                     <Box border round="small" pad="medium" margin="small">
                                                         <DataChart
@@ -349,7 +349,7 @@ export default function BusinessPage() {
                                                                     <Box pad={{ vertical: 'xsmall' }}>
                                                                         {
                                                                             datum.from === "You" ?
-                                                                                <Text weight="bold" color="brand">You</Text>
+                                                                                <Text weight="bold" color="textColor">You</Text>
                                                                                 :
                                                                                 <Text 
                                                                                     tip={{ 
@@ -370,7 +370,7 @@ export default function BusinessPage() {
                                                                     <Box pad={{ vertical: 'xsmall' }}>
                                                                         {
                                                                             datum.to === "You" ?
-                                                                                <Text weight="bold" color="brand">You</Text>
+                                                                                <Text weight="bold" color="textColor">You</Text>
                                                                                 :
                                                                                 <Text 
                                                                                     tip={{ 
@@ -389,7 +389,11 @@ export default function BusinessPage() {
                                                                 header: <Text>Currency</Text>,
                                                                 render: (datum: any) => (
                                                                     <Box pad={{ vertical: 'xsmall' }}>
-                                                                        <Text weight="bold">{datum.currency}</Text>
+                                                                        {   datum.currency === storeData?.token ?
+                                                                            <Text weight="bold" color="textColor">{datum.currency}</Text>
+                                                                            :
+                                                                            <Text weight="bold">{datum.currency}</Text>
+                                                                        }
                                                                     </Box>
                                                                 ),
                                                             },

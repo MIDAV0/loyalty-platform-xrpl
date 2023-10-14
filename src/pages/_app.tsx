@@ -1,6 +1,6 @@
 import { type AppType } from 'next/app';
 
-import { Grommet } from 'grommet';
+import { Box, Grommet } from 'grommet';
 import './global.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
@@ -9,7 +9,7 @@ import { ToastContainer } from 'react-toastify';
 const xrpl = {
   global: {
     font: {
-      family: 'Gilroy',
+      family: 'Audiowide',
     },
     focus: {
       border: {
@@ -17,12 +17,14 @@ const xrpl = {
       },
     },
     colors: {
-      brand: '#6C94EC',
+      brand: '#E07A5F',
+      secondary: '#3D405B',
+      textColor: '#81B29A'
     },
   },
   button: {
     default: {
-      background: { color: '#6C94EC' },
+      background: { color: '#E07A5F' },
       border: { color: '#000000' },
     },
     color: '#FFFFFF',
@@ -32,15 +34,15 @@ const xrpl = {
       font: { weight: 'bold' },
       color: '#FFFFFF',
       background: {
-        color: '#6C94EC',
+        color: '#E07A5F',
       },
     },
     secondary: {
       border: { width: '2px', radius: '8px', color: '#000000' },
       font: { weight: 'bold' },
-      color: '#000000',
+      color: '#FFFFFF',
       background: {
-        color: '#EEEEEE',
+        color: '#3D405B',
       },
     },
   },
@@ -50,8 +52,10 @@ const xrpl = {
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
     <Grommet theme={xrpl}>
-          <Component {...pageProps} />
-          <ToastContainer />
+      <Box height="100vh" background="#F4F1DE">
+        <Component {...pageProps} />
+        <ToastContainer />
+      </Box>
     </Grommet>
   );
 };

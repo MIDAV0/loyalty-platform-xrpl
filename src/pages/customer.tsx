@@ -177,7 +177,7 @@ export default function CustomerPage() {
                       </Box>
                       <Box direction="row" alignSelf="end" gap="small">
                       <Button
-                          secondary
+                          primary
                           label="Go Back"
                           onClick={() => setShowWalletSettings(false)}
                       />
@@ -186,7 +186,7 @@ export default function CustomerPage() {
               </Layer>
           )}
           <Header
-              direction="row"
+              direction="row-responsive"
               align="center"
               justify="evenly"
               pad={{ vertical: 'small', horizontal: 'xlarge' }}
@@ -240,20 +240,20 @@ export default function CustomerPage() {
                                           <Button
                                               onClick={() => setShowTab('dashboard')}
                                               label="Dashboard"
-                                              primary={showTab === 'dashboard'}
+                                              secondary={showTab === 'dashboard'}
                                               plain={showTab !== 'dashboard'}
                                           />
                                           <Button
                                               onClick={() => setShowTab('rewards')}
                                               label="Rewards"
-                                              primary={showTab === 'rewards'}
+                                              secondary={showTab === 'rewards'}
                                               plain={showTab !== 'rewards'}
                                           />                      
                                       </Box>
                                   </Box>
                                   {
                                       showTab === 'dashboard' && (
-                                          <Box width="85%" direction="row">
+                                          <Box width="85%" direction="row-responsive">
                                               <Box width="70%">
                                                   <Box border round="small" pad="medium" margin="small">
                                                       <DataChart
@@ -280,7 +280,7 @@ export default function CustomerPage() {
                                                                 <Box pad={{ vertical: 'xsmall' }}>
                                                                     {
                                                                         datum.from === "You" ?
-                                                                            <Text weight="bold" color="brand">You</Text>
+                                                                            <Text weight="bold" color="textColor">You</Text>
                                                                             :
                                                                             <Text 
                                                                                 tip={{ 
@@ -302,7 +302,7 @@ export default function CustomerPage() {
                                                                 <Box pad={{ vertical: 'xsmall' }}>
                                                                     {
                                                                         datum.to === "You" ?
-                                                                            <Text weight="bold" color="brand">You</Text>
+                                                                            <Text weight="bold" color="textColor">You</Text>
                                                                             :
                                                                             <Text 
                                                                                 tip={{ 

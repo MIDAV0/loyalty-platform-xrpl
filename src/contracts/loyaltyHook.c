@@ -72,7 +72,7 @@ int64_t hook(uint32_t reserved)
 
     int64_t otxn_drops = AMOUNT_TO_DROPS(amount_buffer);
     TRACEVAR(otxn_drops);
-    if (otxn_drops > 0)
+    if (otxn_drops <= 0)
         rollback(SBUF("Loyalty Hook: No XRP was sent transaction detected"), 1);
     
     // Get token ratio from parameters
@@ -87,10 +87,11 @@ int64_t hook(uint32_t reserved)
         rollback(SBUF("Loyalty Hook: Token ratio is zero or less"), 1);
     
     // Get token code from parameters
-    uint8_t token_buff[20];
+    uint8_t token_buff[48];
     uint8_t token_key[5] = { 'T', 'O', 'K', 'E', 'N' };
     int64_t token_len = hook_param(SBUF(token_buff), SBUF(token_key));
     TRACEVAR(token_len);
+    TRACEVAR(token_buff);
 
     if (token_len < 1)
         rollback(SBUF("Loyalty Hook: Token code is empty"), 1);
@@ -150,6 +151,9 @@ int64_t hook(uint32_t reserved)
         accept(SBUF("txn_payment.c: Tx emitted success."), 0);
     }
     accept(SBUF("txn_payment.c: Tx emitted failure."), 0);
+    
+
+    _g(1,1);
 
     return 0;
 }

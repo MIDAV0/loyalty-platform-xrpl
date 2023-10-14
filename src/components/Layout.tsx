@@ -13,7 +13,7 @@ export const Layout = ({ children }: Props) => {
   const size = useContext(ResponsiveContext);
 
   return (
-    <Box background="#F8FAFB">
+    <Box background="#F4F1DE">
       <Header
         direction="row"
         align="center"

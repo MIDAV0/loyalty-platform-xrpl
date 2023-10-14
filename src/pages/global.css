@@ -1,4 +1,5 @@
 @import url("https://gistcdn.githack.com/mfd/09b70eb47474836f25a21660282ce0fd/raw/e06a670afcb2b861ed2ac4a1ef752d062ef6b46b/Gilroy.css");
+@import url("https://fonts.googleapis.com/css?family=Audiowide");
 
 body {
   margin: 0;
@@ -7,6 +8,6 @@ body {
 
 
 .App {
-  font-family: "Gilroy";
+  font-family: "Audiowide";
   text-align: center;
 }

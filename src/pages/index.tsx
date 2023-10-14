@@ -1,4 +1,5 @@
 import { Box, Heading, Text } from 'grommet';
+import { Down } from "grommet-icons";
 import { Layout, PrimaryButton, SecondaryButton } from '../components';
 
 export default function IndexPage() {
@@ -6,14 +7,12 @@ export default function IndexPage() {
     <Layout>
       <Box
         align="center"
-        justify="center"
-        alignSelf="center"
-        gap="xlarge"
+        gap="large"
         height="100vh"
       >
-        <Box>
+        <Box margin={{top: "xlarge"}}>
           <Heading size="large" color="black" textAlign="center">
-            Platform title
+            Loyalty programs on the XRPL
           </Heading>
           <Text size="xxlarge" textAlign="center" color="black">
             Continue to the platform as
@@ -34,6 +33,10 @@ export default function IndexPage() {
             size="xlarge"
             pad={{ vertical: 'medium', horizontal: 'xlarge' }}
           />
+        </Box>
+        <Box align="center" margin={{ top: "large" }}>
+          <Text size="large">Learn more</Text>
+          <Down size="large" />
         </Box>
       </Box>
     </Layout>
