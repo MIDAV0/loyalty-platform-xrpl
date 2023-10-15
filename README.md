@@ -10,6 +10,7 @@ Created by [Vadzim Mahilny]()
 ## Table of Contents
 - [Project Idea](#project-idea)
 - [Loyalty programs for SMEs (Small and Medium Enterprises)](#loyalty-programs-for-smes-small-and-medium-enterprises)
+- [Preview](#preview)
 - [Documentation](#documentation)
     - [Project Spec](#project-spec)
     - [Diagrams](#diagrams)
@@ -32,6 +33,26 @@ Created by [Vadzim Mahilny]()
 
 **Ripple article about ["How Can Crypto Evolve Brand Rewards and Loyalty?](https://ripple.com/insights/how-can-crypto-evolve-brand-rewards-and-loyalty/?utm_campaign=&utm_medium=organic_social&utm_source=linkedin)**
 
+<a id="preview"></a>
+## Preview
+#### Main Page
+![Alt text](<Screenshot 2023-10-15 at 19.48.34.png>)
+#### Business Dashboard
+![Alt text](<Screenshot 2023-10-15 at 19.47.23.png>)
+#### Business Settings
+![Alt text](<Screenshot 2023-10-15 at 19.48.23.png>)
+#### Business rewards
+![Alt text](<Screenshot 2023-10-15 at 19.47.32.png>)
+#### Business create reward
+![Alt text](<Screenshot 2023-10-15 at 19.47.40.png>)
+
+#### Customer Dashboard
+![Alt text](<Screenshot 2023-10-15 at 19.55.07.png>)
+#### Customer Store List
+![Alt text](<Screenshot 2023-10-15 at 19.55.14.png>)
+#### Customer Store Rewards
+![Alt text](<Screenshot 2023-10-15 at 19.55.20.png>)
+
 <a id="documentation"></a>
 ## Documentation
 <a id="project-spec"></a>
@@ -52,8 +73,9 @@ The project is built using:
 #### Merchant Flow
 ![Alt text](<XRPLFlows-Business Flow.jpg>)
 
-<a id="hooks"></a
+<a id="hooks"></a>
 #### Hooks
+During account set up process merchant sets the `loyaltyHook` onto their XRPL account. Hook is set with two parameters provided by merchant `token symbol` (3 characters) and `token ratio` (amount of tokens that is sent to customer depending on the amount of XRP they sent to merchant).
 ![Alt text](XRPLFlows-Hook.jpg)
 
 <a id="installation"></a>

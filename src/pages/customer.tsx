@@ -18,6 +18,7 @@ import getWalletDetails from '../helpers/getWalletDetails';
 import setUserTrustLine from '../helpers/setUserTrustLine';
 import { Reward } from '../components/Reward';
 import { Store } from '../components/Store';
+import Image from 'next/image';
 
 const dates = [{ date: '2020-08-20', amount: 2 }, { date: '2020-08-21', amount: 47 }, { date: '2020-08-22', amount: 33 }];
 
@@ -195,9 +196,12 @@ export default function CustomerPage() {
               background="#FFFFFF"
               height="xsmall"
           >
-              <Box width="small">
-              LOGO
-              </Box>
+                <Image
+                    width={200}
+                    height={80}
+                    src="/Logo.png"
+                    alt="reward image"
+                /> 
               <Button
                   secondary
                   label={
@@ -386,7 +390,6 @@ export default function CustomerPage() {
                                                                 <Heading level="3">Stores {stores.length}</Heading>
                                                             )
                                                         }
-                                                        <Text>Search</Text>
                                                         { activeStore && (
                                                             <Button
                                                                 primary

@@ -52,7 +52,7 @@ const xrpl = {
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
     <Grommet theme={xrpl}>
-      <Box height="100vh" background="#F4F1DE">
+      <Box background="#F4F1DE">
         <Component {...pageProps} />
         <ToastContainer />
       </Box>

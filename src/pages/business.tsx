@@ -21,6 +21,7 @@ import { dropsToXrp, AccountTxTransaction, LedgerEntryResponse, Client, AccountL
 import getWalletDetails from '../helpers/getWalletDetails';
 import setTokenIssuer from '../helpers/setMerchantHook';
 import { Reward } from '../components/Reward';
+import Image from 'next/image';
 
 const dates = [{ date: '2020-08-20', amount: 2 }, { date: '2020-08-21', amount: 47 }, { date: '2020-08-22', amount: 33 }];
 
@@ -69,9 +70,11 @@ export default function BusinessPage() {
         const installed = await isInstalled();
         if (installed.result.isInstalled) {
           getAddress().then((response) => {
-            response.result ? setAddress(response.result.address) : setAddress('');
-            setIsConnected(true);
-            setInstallGemWallet(false);
+            if (response.result){
+                setAddress(response.result.address)
+                setIsConnected(true);
+                setInstallGemWallet(false);
+            }
           });
         } else {
             setInstallGemWallet(true);
@@ -256,9 +259,12 @@ export default function BusinessPage() {
                 background="#FFFFFF"
                 height="xsmall"
             >
-                <Box width="small">
-                LOGO
-                </Box>
+                <Image
+                    width={200}
+                    height={80}
+                    src="/Logo.png"
+                    alt="reward image"
+                />  
                 <Button
                     secondary
                     label={
@@ -499,7 +505,7 @@ export default function BusinessPage() {
                                                             onClick={() => setTokenIssuer(address, domain)}
                                                         />
                                                     </Box>
-                                                    <Box align="center">
+                                                    <Box align="center" gap='small'>
                                                         <Heading level="4">Set Hook</Heading>
                                                         <TextInput placeholder="Reward ratio" type='number'/>
                                                         <PrimaryButton label="Set Hook"/>

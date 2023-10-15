@@ -8,7 +8,6 @@ export default function IndexPage() {
       <Box
         align="center"
         gap="large"
-        height="100vh"
       >
         <Box margin={{top: "xlarge"}}>
           <Heading size="large" color="black" textAlign="center">
@@ -37,6 +36,27 @@ export default function IndexPage() {
         <Box align="center" margin={{ top: "large" }}>
           <Text size="large">Learn more</Text>
           <Down size="large" />
+        </Box>
+      </Box>
+      <Box align="center">
+        <Heading>How it works</Heading>
+        <Box width="100%" direction="row-responsive" pad={{ bottom: "large"}}>
+          <Box basis='1/2' align="center" border={{side: "right"}} gap="medium">
+            <Heading level="3">Business</Heading>
+            <Text>Set up account</Text>
+            <Down />
+            <Text>Create rewards</Text>
+            <Down />
+            <Text>Spoil your customers</Text>
+          </Box>
+          <Box basis='1/2' align="center" gap="medium">
+            <Heading level="3">Customer</Heading>
+            <Text>Browse available stores</Text>
+            <Down />
+            <Text>Choose store and set up trust line</Text>
+            <Down />
+            <Text>Enjoy rewards</Text>
+          </Box>
         </Box>
       </Box>
     </Layout>

@@ -2,6 +2,7 @@ import { Box, Header, Main, ResponsiveContext } from 'grommet';
 import { useContext } from 'react';
 import { useRouter } from 'next/router';
 import { Wallet } from './Wallet';
+import Image from 'next/image';
 
 
 interface Props {
@@ -17,18 +18,18 @@ export const Layout = ({ children }: Props) => {
       <Header
         direction="row"
         align="center"
-        justify="evenly"
         pad={{ vertical: 'small', horizontal: 'xlarge' }}
         border="bottom"
         gap="xlarge"
         background="#FFFFFF"
         height="xsmall"
       >
-        <Box width="small">
-          LOGO
-        </Box>
-
-        { pathname !== '/' && <Wallet /> }
+          <Image
+            width={200}
+            height={80}
+            src="/Logo.png"
+            alt="reward image"
+          />   
       </Header>
 
       <Main background={pathname === '/' ? 'url(main-bg.png)' : ''} fill>
