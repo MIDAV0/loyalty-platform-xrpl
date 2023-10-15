@@ -19,34 +19,34 @@ export default async function setMerchantHook(address: string, domain: string) {
               "TickSize": 5,
               "Domain": xrpl.convertStringToHex(domain),
             },
-            {
-              ID: '002',
-              // @ts-ignore
-              "TransactionType": "SetHook",
-              "Account": "r4GDFMLGJUKMjNhhycgt2d5LXCdXzCYPoc",
-              "Fee": "2000000",
-              "Hooks":
-              [        
-                  {                        
-                      "Hook": {                
-                          "CreateCode": fs.readFileSync('accept.wasm').toString('hex').toUpperCase(),
-                          "HookOn": '0000000000000000',
-                          "HookNamespace": addr.codec.sha256('accept').toString('hex').toUpperCase(),
-                          "HookApiVersion": 0,
-                          "HookParameters":
-                          [   
-                              {   
-                                  "HookParameter":
-                                  {   
-                                      "HookParameterName":  "ABCDEF12",
-                                      "HookParameterValue": "12345678"
-                                  }   
-                              },  
-                          ]
-                      }
-                  }
-              ]
-            }
+            // {
+            //   ID: '002',
+            //   // @ts-ignore
+            //   "TransactionType": "SetHook",
+            //   "Account": "r4GDFMLGJUKMjNhhycgt2d5LXCdXzCYPoc",
+            //   "Fee": "2000000",
+            //   "Hooks":
+            //   [        
+            //       {                        
+            //           "Hook": {                
+            //               "CreateCode": fs.readFileSync('accept.wasm').toString('hex').toUpperCase(),
+            //               "HookOn": '0000000000000000',
+            //               "HookNamespace": addr.codec.sha256('accept').toString('hex').toUpperCase(),
+            //               "HookApiVersion": 0,
+            //               "HookParameters":
+            //               [   
+            //                   {   
+            //                       "HookParameter":
+            //                       {   
+            //                           "HookParameterName":  "ABCDEF12",
+            //                           "HookParameterValue": "12345678"
+            //                       }   
+            //                   },  
+            //               ]
+            //           }
+            //       }
+            //   ]
+            // }
           ];
   
           submitBulkTransactions({
