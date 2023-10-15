@@ -3,7 +3,7 @@
 ## About
 This project is a submission for XRPL Campus Ambassador Program.
 
-A live version of the project can be found at [link]()
+A live version of the project can be found at [link](https://loyalty-platform-xrpl.vercel.app/)
 
 Created by [Vadzim Mahilny]()
 
