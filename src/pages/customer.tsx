@@ -87,8 +87,11 @@ export default function CustomerPage() {
       const filteredTxnsData = filteredTxns?.map((txn) => {
           return {
               from: txn.tx?.Account === address ? 'You' : txn.tx?.Account,
+            //@ts-ignore
               to: txn.tx?.Destination ? (txn.tx?.Destination === address ? 'You' : txn.tx?.Destination) : '',
-              currency: txn.tx?.Amount.currency ? txn.tx?.Amount.currency : 'XRP',
+            //@ts-ignore
+            currency: txn.tx?.Amount.currency ? txn.tx?.Amount.currency : 'XRP',
+            //@ts-ignore
               amount: txn.tx?.Amount.value ? txn.tx?.Amount.value : dropsToXrp(txn.tx?.Amount), 
           }
       });

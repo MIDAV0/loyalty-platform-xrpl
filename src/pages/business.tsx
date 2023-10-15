@@ -91,14 +91,19 @@ export default function BusinessPage() {
         const filteredTxns = transactions ? transactions?.filter((transaction) => transaction.tx?.TransactionType === 'Payment') : [];
 
         const filteredTxnsData = filteredTxns?.map((txn) => {
+            //@ts-ignore
             return {
                 from: txn.tx?.Account === address ? 'You' : txn.tx?.Account,
+                //@ts-ignore
                 to: txn.tx?.Destination ? (txn.tx?.Destination === address ? 'You' : txn.tx?.Destination) : '',
+                //@ts-ignore
                 currency: txn.tx?.Amount.currency ? txn.tx?.Amount.currency : 'XRP',
+                //@ts-ignore
                 amount: txn.tx?.Amount.value ? txn.tx?.Amount.value : dropsToXrp(txn.tx?.Amount), 
             }
         });
 
+        //@ts-ignore
         const txDates = filteredTxns.filter((transaction) => transaction.tx?.Account !== address)?.map((txn) => rippleTimeToISOTime(txn.tx?.date).substring(0,10));
         console.log(txDates);
 
