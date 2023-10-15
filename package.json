@@ -14,6 +14,7 @@
     "@prisma/client": "^5.3.1",
     "@transia/hooks-toolkit": "^1.0.5",
     "@types/react": "^18.2.21",
+    "@types/styled-components": "^5.1.28",
     "c2wasm-cli": "^1.0.6",
     "global": "^4.4.0",
     "grommet": "^2.33.2",
