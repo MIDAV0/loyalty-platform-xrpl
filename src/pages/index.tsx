@@ -45,15 +45,19 @@ export default function IndexPage() {
             <Heading level="3">Business</Heading>
             <Text>Set up account</Text>
             <Down />
+            <Text>Customize loyalty program</Text>
+            <Down />
             <Text>Create rewards</Text>
             <Down />
-            <Text>Spoil your customers</Text>
+            <Text>Make loyal customers</Text>
           </Box>
           <Box basis='1/2' align="center" gap="medium">
             <Heading level="3">Customer</Heading>
             <Text>Browse available stores</Text>
             <Down />
             <Text>Choose store and set up trust line</Text>
+            <Down />
+            <Text>Purchase products/services for XRP and get points</Text>
             <Down />
             <Text>Enjoy rewards</Text>
           </Box>
